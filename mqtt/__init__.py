@@ -53,11 +53,11 @@ class Mqtt(SmartPlugin):
     
     ALLOW_MULTIINSTANCE = True
     
-    PLUGIN_VERSION = "1.3.3"
+    PLUGIN_VERSION = "1.3.4"
 
     __plugif_CallbackTopics = {}         # for plugin interface
     __plugif_Sub = None
-    
+        
     
     def __init__(self, sh, 
             host='127.0.0.1', port='1883', qos='1',
@@ -240,7 +240,7 @@ class Mqtt(SmartPlugin):
                    
         # subscribe to configured topics
         if self.has_iattr(item.conf, 'mqtt_topic_in'):
-            if self._connected:
+            if self._connected or True:
                 topic = self.get_iattr_value(item.conf, 'mqtt_topic_in')
                 self.topics[topic] = item
                 self._client.subscribe(topic, qos=self.get_qos_forTopic(item) )

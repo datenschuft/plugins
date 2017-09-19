@@ -2,6 +2,7 @@
 	"Scheduler": "Scheduler",
 	"Logik": "Logik",
 	"Systemlogiken": "Systemlogiken",
+	"Nutzerlogiken": "Nutzerlogiken",
 	"Neue Logiken (nicht geladen)": "Neue Logiken (nicht geladen)",
 	"nächste Ausführung": "nächste Ausführung",
 	"Cycle": "Cycle",
@@ -35,6 +36,7 @@
 	
 	"Evaluation und Trigger": "Initialisierungs-, Evaluations- und Trigger-Konfiguration",
 	"Plugin spezifische Attribute": "Plugin spezifische Konfigurationen",
+	"Plugin Metadaten": "Plugin Metadaten",
 	"Verbundene Logiken": "Verbundene Logiken",
 	"Verbundene Trigger": "Verbundene Trigger",
 	"Willkommen im Backend von": "Willkommen im Backend von",
@@ -116,8 +118,12 @@
 	"Übersicht": "Übersicht",
 	"Eingabe im .CONF Format": "Eingabe im .CONF Format",
 	"Ergebnis im .YAML Format": "Ergebnis im .YAML Format",
+	"Wartung": "Wartung",
+	"Tester": "Tester",
+	"Beschreibung": "Beschreibung",
+	"Documentation": "Dokumentation",
+	"Support": "Support",
 	
-
 	"_items": {
 		"path": "Pfad",
 		"name": "Name",

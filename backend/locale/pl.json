@@ -2,6 +2,7 @@
 	"Scheduler": "Planista",
 	"Logik": "Logika",
 	"Systemlogiken": "Logika systemowa",
+	"Nutzerlogiken": "Nutzerlogiken",
 	"nächste Ausführung": "Następne wykonanie",
 	"Cycle": "Cykl",
 	"Crontab": "Harmonogram",
@@ -34,6 +35,7 @@
 	
 	"Evaluation und Trigger": "Inicjalizacja, ewaluacja i wyzwalacze",
 	"Plugin spezifische Attribute": "Konfiguracja pluginów",
+	"Plugin Metadaten": "Plugin Metadaten",
 	"Verbundene Logiken": "Powiązana Logika",
 	"Verbundene Trigger": "Powiązane wyzwalacze",
 	"Willkommen im Backend von": "Witaj w backendzie",
@@ -114,6 +116,11 @@
 	"Übersicht": "Badanie",
 	"Eingabe im .CONF Format": "Eingabe im .CONF Format",
 	"Ergebnis im .YAML Format": "Ergebnis im .YAML Format"
+	"Wartung": "Wartung",
+	"Tester": "Tester",
+	"Beschreibung": "Beschreibung",
+	"Documentation": "Dokumentation",
+	"Support": "Support",
 
 	"_items": {
 		"path": "ścieżka",

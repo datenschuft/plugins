@@ -48,7 +48,7 @@ from .utils import *
 
 class BackendServer(SmartPlugin):
     ALLOW_MULTIINSTANCE = False
-    PLUGIN_VERSION='1.3.5'
+    PLUGIN_VERSION='1.3a.6'
 
     def my_to_bool(self, value, attr='', default=False):
         try:
@@ -63,8 +63,14 @@ class BackendServer(SmartPlugin):
         s.connect(("10.10.10.10", 80))
         return s.getsockname()[0]
 
-    def __init__(self, sh, port=None, threads=8, ip='', updates_allowed='True', user="admin", password="", hashed_password="", language="", developer_mode="no", pypi_timeout=5):
+#    def __init__(self, sh, port=None, threads=8, ip='', updates_allowed='True', user="admin", password="", hashed_password="", language="", developer_mode="no", pypi_timeout=5):
+    def __init__(self, sh, updates_allowed='True', user="admin", password="", hashed_password="", language="", developer_mode="no", pypi_timeout=5):
         self.logger = logging.getLogger(__name__)
+        self.logger.debug('Backend.__init__')
+        
+        #================================================================================
+        # Checking and converting parameters
+        #
         self._user = user
         self._password = password
         self._hashed_password = hashed_password
@@ -83,28 +89,8 @@ class BackendServer(SmartPlugin):
             self._basic_auth = False
         self._sh = sh
 
-        if self.is_int(port):
-            self.port = int(port)
-        else:
-            self.port = 8383
-            if port is not None:
-                self.logger.error("BackendServer: Invalid value '"+str(port)+"' configured for attribute 'port' in plugin.conf, using '"+str(self.port)+"' instead")
-
-        if self.is_int(threads):
-            self.threads = int(threads)
-        else:
-            self.threads = 8
-            self.logger.error("BackendServer: Invalid value '"+str(threads)+"' configured for attribute 'thread' in plugin.conf, using '"+str(self.threads)+"' instead")
-
-        if ip == '':
-            ip = self.get_local_ip_address()
-            self.logger.debug("BackendServer: Using local ip address '{0}'".format(ip))
-        else:
-            pass
-        #    if not self.is_ip(ip):
-        #         self.logger.error("BackendServer: Invalid value '"+str(ip)+"' configured for attribute ip in plugin.conf, using '"+str('0.0.0.0')+"' instead")
-        #         ip = '0.0.0.0'
-        language = language.lower()
+#        language = language.lower()
+        language = self._sh.get_defaultlanguage()
         if language != '':
             if not load_translation(language):
                 self.logger.warning("BackendServer: Language '{0}' not found, using standard language instead".format(language))
@@ -119,15 +105,27 @@ class BackendServer(SmartPlugin):
             if pypi_timeout is not None:
                 self.logger.error("BackendServer: Invalid value '" + str(pypi_timeout) + "' configured for attribute 'pypi_timeout' in plugin.conf, using '" + str(self.pypi_timeout) + "' instead")
 
+
+
         current_dir = os.path.dirname(os.path.abspath(__file__))
         self.logger.debug("BackendServer running from '{}'".format(current_dir))
 
-        config = {'global': {
-            'engine.autoreload.on': False,
-            'tools.staticdir.debug': True,
-            'tools.trailing_slash.on': False,
-            'log.screen': False
-            },
+
+        #================================================================================
+        # Handling for module http (try/except to handle running in a core version that does not support modules)
+        #
+        self.classname = self.__class__.__name__
+        try:
+            self.mod_http = sh.get_module('http')
+        except:
+             self.mod_http = None
+        if self.mod_http == None:
+            self.logger.error('{0}: Module ''http'' not loaded - Abort loading of plugin {0}'.format(self.classname))
+            return
+
+#        self.logger.warning('BackendServer: Using module {} version {}: {}'.format( str( self.mod_http.shortname ), str( self.mod_http.version ), str( self.mod_http.longname ) ) )
+        self.logger.info('{}: Using module {}'.format(self.classname, str( self.mod_http._shortname ), str( self.mod_http.version ), str( self.mod_http._longname ) ) )
+        config = {
             '/': {
                 'tools.auth_basic.on': self._basic_auth,
                 'tools.auth_basic.realm': 'earth',
@@ -139,28 +137,25 @@ class BackendServer(SmartPlugin):
                 'tools.staticdir.dir': os.path.join(current_dir, 'static')
             }
         }
-        from cherrypy._cpserver import Server
-        self._server = Server()
-        self._server.socket_host = ip
-        self._server.socket_port = int(self.port)
-        self._server.thread_pool = self.threads
-        self._server.subscribe()
+        appname = 'backend'    # Name of the plugin
+        plugin = self.__class__.__name__
+        instance = self.get_instance_name()
 
-        self._cherrypy = cherrypy
-        self._cherrypy.config.update(config)
-        self._cherrypy.tree.mount(Backend(self, self.updates_allowed, language, self.developer_mode, self.pypi_timeout), '/', config = config)
+        self.mod_http.register_webif(Backend(self, self.updates_allowed, language, self.developer_mode, self.pypi_timeout), 
+                                     appname, 
+                                     config, 
+                                     plugin, instance,
+                                     description='Administrationsoberfläche für SmartHomeNG',
+                                     webifname='')
+
 
     def run(self):
         self.logger.debug("BackendServer: rest run")
-        self._server.start()
-        #self._cherrypy.engine.start()
-        self.logger.debug("BackendServer: engine started")
-        #cherrypy.engine.block()
         self.alive = True
 
     def stop(self):
         self.logger.debug("BackendServer: shutting down")
-        self._server.stop()
+#        self._server.stop()
         #self._cherrypy.engine.exit()
         self.logger.debug("BackendServer: engine exited")
         self.alive = False

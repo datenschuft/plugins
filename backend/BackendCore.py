@@ -123,7 +123,9 @@ class Backend:
 
         plugin_names = []
         for plugin in _conf:
-            plugin_name = _conf[plugin]['class_path'].strip()
+            plugin_name = _conf[plugin].get('class_path', '').strip()
+            if plugin_name == '':
+                plugin_name = 'plugins.' + _conf[plugin].get('plugin_name', '').strip() 
             if not plugin_name in plugin_names:  # only unique plugin names, e.g. if multiinstance is used
                 plugin_names.append(plugin_name)
 
@@ -402,7 +404,7 @@ class Backend:
     @cherrypy.expose
     def item_change_value_html(self, item_path, value):
         """
-        returns a list of items as json structure
+        Is called by items.html when an item value has been changed
         """
         item_data = []
         item = self._sh.return_item(item_path)
@@ -609,13 +611,13 @@ class Backend:
 
 
     @cherrypy.expose
-    def logics_view_html(self, file_path, logic, trigger=None, reload=None, enable=None, savereload=None, logics_code=None):
+    def logics_view_html(self, file_path, logicname, trigger=None, reload=None, enable=None, savereload=None, logics_code=None, cycle=None, crontab=None, watch=None):
         """
         returns information to display a logic in an editor window
         """
         # process actions triggerd by buttons on the web page
-        self.process_logics_action(logic, trigger, reload, enable, savereload, logics_code, None, None, None)
-        mylogic = self._sh.return_logic(logic)
+        self.process_logics_action(logicname, trigger, reload, enable, savereload, logics_code, None, None, None)
+        mylogic = self._sh.return_logic(logicname)
 
         fobj = open(file_path)
         file_lines = []
@@ -623,15 +625,20 @@ class Backend:
             file_lines.append(self.html_escape(line))
         fobj.close()
 
-        return self.render_template('logics_view.html', logic=mylogic, logic_lines=file_lines, file_path=file_path,
+        return self.render_template('logics_view.html', logicname=logicname, thislogic=mylogic, logic_lines=file_lines, file_path=file_path,
                                     updates=self.updates_allowed)
+#        return self.render_template('logics_view.html', logicname=mylogic['name'], thislogic=mylogic, logic_lines=file_lines, file_path=file_path,
+#                                    updates=self.updates_allowed)
 
     # -----------------------------------------------------------------------------------
 
-    def process_logics_action(self, logic=None, trigger=None, reload=None, enable=None, savereload=None, logics_code=None, unload=None, configload=None, add=None):
-        self.logger.debug(
+    def process_logics_action(self, logicname=None, trigger=None, reload=None, enable=None, savereload=None, logics_code=None, unload=None, configload=None, add=None):
+#    def process_logics_action(self, logicname=None, trigger=None, reload=None, enable=None, savereload=None, logics_code=None, unload=None, configload=None, add=None, 
+#                                    cycle=None, crontab=None, watch=None):
+        self.logger.warning(
             "Backend: logics_html: trigger = '{0}', reload = '{1}', enable='{2}', savereload='{3}'".format(trigger, reload,
                                                                                                      enable, savereload))
+        logic = logicname
         if enable is not None:
             self.logic_enable(logic)
 
@@ -819,27 +826,40 @@ class Backend:
         """
         conf_plugins = {}
         _conf = lib.config.parse(self._sh._plugin_conf)
+#        self.logger.warning("plugins_html: _conf = {0}".format(_conf))
         for plugin in _conf:
             # self.logger.warning("plugins_html: class_name='{0}', class_path='{1}'".format(_conf[plugin]['class_name'], _conf[plugin]['class_path']))
-            conf_plugins[_conf[plugin]['class_name']] = _conf[plugin]['class_path']
-            # self.logger.warning("plugins_html: conf_plugins='{0}'".format(conf_plugins))
+            conf_plugins[plugin] = {}
+            conf_plugins[plugin] = _conf[plugin]
 
         plugins = []
         for x in self._sh._plugins:
             plugin = dict()
-            plugin['classname'] = x.__class__.__name__
-            plugin['classpath'] = conf_plugins[x.__class__.__name__]
+#            plugin['classpath'] = conf_plugins[x._config_section]['class_path']
+            if bool(x._parameters):
+                plugin['attributes'] = x._parameters
+                self.logger.warning("plugins_html: x._parameters = {}".format(str(x._parameters)))
+            else:
+                plugin['attributes'] = conf_plugins[x._config_section]
+            plugin['metadata'] = x._metadata
             if isinstance(x, SmartPlugin):
                 plugin['smartplugin'] = True
                 plugin['instancename'] = x.get_instance_name()
                 plugin['multiinstance'] = x.is_multi_instance_capable()
                 plugin['version'] = x.get_version()
+                plugin['shortname'] = x.get_shortname()
+                plugin['classpath'] = x._classpath
+                plugin['classname'] = x.get_classname()
             else:
                 plugin['smartplugin'] = False
+                plugin['shortname'] = x._shortname
+                plugin['classpath'] = x._classpath
+                plugin['classname'] = x._classname
+#            plugin['classpath'] = 'plugins.'+plugin['classname']
             plugins.append(plugin)
         plugins_sorted = sorted(plugins, key=lambda k: k['classpath'])
 
-        return self.render_template('plugins.html', plugins=plugins_sorted)
+        return self.render_template('plugins.html', plugins=plugins_sorted, lang=get_translation_lang(), mod_http=self._bs.mod_http)
 
 
     # -----------------------------------------------------------------------------------

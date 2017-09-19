@@ -1,6 +1,8 @@
 # KOSTAL
 
-Version: 1.3.1.2
+### Version: 1.3.1.2
+
+Kostal Inverter
 
 This plugin is designed to retrieve data from a [KOSTAL](http://www.kostal-solar-electric.com/) inverter module (e.g. PIKO inverters).
 Since UI-version (communication-board) 6 json-format is supported.
@@ -43,13 +45,11 @@ Is currently working with the following KOSTAL inverter modules:
   http://kostal-solar-electric.com/de-DE/Produkte_Service/PIKO-Wechselrichter_bewaehrte_Generation,
   I'll don't know if the communication board of old inverters could also be updated to version 6.x.
 
-## Configuration
 
-### plugin.conf
+### plugin.conf (deprecated) / plugin.yaml
 
 The plugin can be configured like this:
 
-<pre>
 [Kostal_PV]
    class_name = Kostal
    class_path = plugins.kostal
@@ -61,7 +61,20 @@ The plugin can be configured like this:
 # use
 #   datastructure=json
 # for UI-Version >6
-</pre>
+
+```yaml
+Kostal_PV:
+    class_name: Kostal
+    class_path: plugins.kostal
+    ip: 192.168.1.21
+    user: pvserver
+    passwd: pvwr
+    cycle: 300
+    datastructure: html
+    # use
+    # datastructure: json
+    # for UI-Version >6
+```
 
 This plugin retrieves data from a KOSTAL inverter module of a solar energy
 plant.
@@ -111,7 +124,7 @@ types of communication can be configured the same way.
 #### Example
 
 <pre>
-# items/my.conf
+# items/my.conf (deprecated)
 # not all possible items are used
 
 [Kostal_PV]
@@ -207,9 +220,130 @@ types of communication can be configured the same way.
       name = Operation time
       type = num
       kostal = operationtime_h
-</pre>
 
-## logic.conf
+```
+# items/my.yaml
+# not all possible items are used
+
+Kostal_PV:
+
+    status:
+        name: inverter status
+        type: str
+        kostal: operation_status
+
+    dcpower:
+        name: total dc power
+        type: num
+        kostal: dctot_w
+
+    dc1_v:
+        name: DC-input 1 voltage
+        type: num
+        kostal: dc1_v
+
+    dc1_a:
+        name: DC-input 1 current
+        type: num
+        kostal: dc1_a
+
+    dc1_w:
+        name: DC-input 1 power
+        type: num
+        kostal: dc1_w
+
+    dc2_v:
+        name: DC-input 2 voltage
+        type: num
+        kostal: dc2_v
+
+    dc2_a:
+        name: DC-input 2 current
+        type: num
+        kostal: dc2_a
+
+    dc2_w:
+        name: DC-input 2 power
+        type: num
+        kostal: dc2_w
+
+    actot_w:
+        name: total ac-output power
+        type: num
+        kostal: actot_w
+
+    actot_cos:
+        name: Cos phi
+        type: num
+        kostal: actot_cos
+
+    actot_limitation:
+        name: Limitation on percent
+        type: num
+        kostal: actot_limitation
+
+    ac1_v:
+        name: Phase 1 voltage
+        type: num
+        kostal: ac1_v
+
+    ac1_a:
+        name: Phase 1 current
+        type: num
+        kostal: ac1_a
+
+    ac1_w:
+        name: Phase 1 power
+        type: num
+        kostal: ac1_w
+
+    ac2_v:
+        name: Phase 2 voltage
+        type: num
+        kostal: ac2_v
+
+    ac2_a:
+        name: Phase 2 current
+        type: num
+        kostal: ac2_a
+
+    ac2_w:
+        name: Phase 2 power
+        type: num
+        kostal: ac2_w
+
+    ac3_v:
+        name: Phase 3 voltage
+        type: num
+        kostal: ac3_v
+
+    ac3_a:
+        name: Phase 3 current
+        type: num
+        kostal: ac3_a
+
+    ac3_w:
+        name: Phase 3 power
+        type: num
+        kostal: ac3_w
+
+    yield_day_kwh:
+        name: Yield today
+        type: num
+        kostal: yield_day_kwh
+
+    yield_tot_kwh:
+        name: Yield total
+        type: num
+        kostal: yield_tot_kwh
+
+    operationtime_h:
+        name: Operation time
+        type: num
+        kostal: operationtime_h
+```
+
+### logic.conf (deprecated) / logic.yaml
 
 No logic related stuff implemented.
 

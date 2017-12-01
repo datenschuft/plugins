@@ -17,7 +17,7 @@
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav">
 				<li class="nav-item"><a href="system.html">{{ _('Systeminfo', 'menu') }}</a></li>
-				{% if yaml_converter %}
+				{% if yaml_converter and 1 == 2 %}
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="services.html" id="supportedContentDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ _('Dienste', 'menu') }}<span class="caret"></span></a>
 				 	<ul class="dropdown-menu" aria-labelledby="supportedContentDropdown">
@@ -30,7 +30,7 @@
 				<li class="nav-item"><a href="services.html">{{ _('Dienste', 'menu') }}</a></li>
 				{% endif %}
 				<li class="nav-item"><a href="items.html">{{ _('Items', 'menu') }}</a></li>
-				{% if True %}
+				{% if False %}
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="logics.html" id="supportedContentDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ _('Logiken', 'menu') }}<span class="caret"></span></a>
 				 	<ul class="dropdown-menu" aria-labelledby="supportedContentDropdown">
@@ -44,6 +44,7 @@
 				{% endif %}
 				<li class="nav-item"><a href="schedules.html">{{ _('Scheduler', 'menu') }}</a></li>
 				<li class="nav-item"><a href="plugins.html">{{ _('Plugins', 'menu') }}</a></li>
+				<li class="nav-item"><a href="scenes.html">{{ _('Szenen', 'menu') }}</a></li>
 				<li class="nav-item"><a href="threads.html">{{ _('Threads', 'menu') }}</a></li>
 				<li class="nav-item"><a href="logging.html">{{ _('Logging', 'menu') }}</a></li>
 				{% if visu_plugin %}<li class="nav-item"><a href="visu.html">{{ _('Visu', 'menu') }}</a></li>{% endif %}
